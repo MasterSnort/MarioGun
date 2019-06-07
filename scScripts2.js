@@ -43,7 +43,43 @@ setSize: function(sw,sh){
         this._x+=this._xSpeed;
         this._y+=this._ySpeed;
     },
-};
+}; // close star Object
+var badStar = {
+    _x: null,
+    _y: null,
+    _xSpeed: null,
+    _ySpeed: null,
+    _sh: 40,
+    _sw: 40,
+    // add this to the variable list at the top of the star class
+    _visible: true,
+
+    //Create new star object with given starting position and speed
+    //class functions exist to set other private variables
+    //All inputs are double and function returns a new star
+    create: function (x, y, xSpeed, ySpeed) {
+        var obj = Object.create(this);
+        obj._x = x;
+        obj._y = y;
+        obj._xSpeed=xSpeed;
+        obj._ySpeed=ySpeed;
+        obj._img = new Image();
+        obj._img.src="images/bstar.png";
+        return obj;
+    },
+
+    // and this just below the other functions in the star class
+    visible: function() {
+        return this._visible;
+    },
+
+    //Update the new x and y of the star based on the speed.
+    update: function () {
+        this._x+=this._xSpeed;
+        this._y+=this._ySpeed;
+    },
+}; //BadStar Object
+
 var atrue = 0;
 var btrue = 0;
 var ctrue = 0;
@@ -55,10 +91,15 @@ window.onload = function() {
     var ctx = canvas.getContext("2d"),
         w = canvas.width = 800,
         h = canvas.height = 500;
+        ctx.fillStyle= "rgba(250,0,0,.4)";
+        ctx.fillRect(50,50,w-100,h-100);
+        ctx.fillStyle="black";
+        ctx.font="30px Sans-Serif";
+        ctx.fillText("Press Space To Start",w/3,h/2);
     // Load Variables
         var p1x=w/2-100, p1y=h/2, p2x=w/2+100, p2y=h/2;
         var bx=w/2, by=h/2;
-        var p1Score = 0, p2Score    = 0;
+        var p1Score = 0, p2Score = 0, p2Lives=3, p1Lives=3;
         // load variables that are global
         var gameOn=false;
 
@@ -68,14 +109,14 @@ window.onload = function() {
     background.src="images/bg.jpg";
     var ship1 = new Image();
     var ship2 = new Image();
-    ship2.src="images/GunGun.png"
+    ship2.src="images/gungun.png"
     ship1.src="images/MarioGun.png"
     var block = new Image();
     block.src="images/block.png"
 
     // moving stars around the screen and update the players movement
        // our stars are created using a single array with a class of information
-    var starCount=100;
+    var starCount=1;
     var starArray=[];
 
     // Create an array of stars
@@ -83,8 +124,16 @@ window.onload = function() {
         // this assigns each element in the array all the information for the star by 
         // using the 'star' class, pass the starting x,y locations 
         //  and speeds into the array.
-        starArray.push(star.create(20,i+50,Math.random()*5,Math.random()*5));
-    }
+        starArray.push(star.create(w/2,i+50,5-Math.random()*10,Math.random()*5));
+    } // close star array
+    // our BADstars are created using a single array with a class of information
+    var badStarCount=15;
+    var badStarArray=[];
+
+    // Create an array of stars
+    for (var i = 0; i < badStarCount; i++) {
+        badStarArray.push(badStar.create(w/2,5*i+50,5-Math.random()*10,5-Math.random()*10));
+    } // close badStarArray
     
 
     function starsUpdate () {
@@ -99,10 +148,26 @@ window.onload = function() {
                 if (starArray[i]._y>h || starArray[i]._y<0) {starArray[i]._ySpeed = -starArray[i]._ySpeed}
                 if (Math.abs(p1x-starArray[i]._x)<20 & Math.abs(p1y-starArray[i]._y)<20) {scoring(i,1);}
                 if (Math.abs(p2x-starArray[i]._x)<20 & Math.abs(p2y-starArray[i]._y)<20) {scoring(i,2);}
+
            
 
        } 
         }//endFor
+        //  draw Bad laser on screen only if visible
+        for (var i = 0; i < badStarCount; i++) {
+                 // this checks to see if the star is visible
+    if (badStarArray[i].visible()){
+                badStarArray[i].update();
+                ctx.drawImage(badStarArray[i]._img, badStarArray[i]._x, badStarArray[i]._y, badStarArray[i]._sw, badStarArray[i]._sh);
+                if (badStarArray[i]._x>w || badStarArray[i]._x<0) {badStarArray[i]._xSpeed = -badStarArray[i]._xSpeed}
+                if (badStarArray[i]._y>h || badStarArray[i]._y<0) {badStarArray[i]._ySpeed = -badStarArray[i]._ySpeed}
+                if (Math.abs(p1x-badStarArray[i]._x)<20 & Math.abs(p1y-badStarArray[i]._y)<20) {lives(i,1);}
+                if (Math.abs(p2x-badStarArray[i]._x)<20 & Math.abs(p2y-badStarArray[i]._y)<20) {lives(i,2);}
+                
+           
+
+       } 
+        }//endForBadStar
      
       
      }//close Stars Update
@@ -161,6 +226,7 @@ window.onload = function() {
         if (40 in keysDown) { // P2 holding down (key: down arrow)
             p2y += 5;
         }
+      
         if (p1x>w-60) {p1x=w-60}
         if (p1y>h-60) {p1y=h-60}
         if (p1y<h-500) {p1y=h-500} 
@@ -205,12 +271,64 @@ window.onload = function() {
         starArray[k]._visible=false;
         if (wp==1) {
             // need to place a small star next to player 1 score
-            p1Score++;
+            p1Lives++;
+           // p2Lives=p2Lives-1;
             $("#p1ScoreDisp").text(p1Score);
+            $("#p1LivesDisp").text(p1Lives);
+            $("#p2LivesDisp").text(p2Lives);
+
         }
         else if (wp==2) {
-            p2Score++;
+            p2Lives++;
+          //  p1Lives=p1Lives-1;
             $("#p2ScoreDisp").text(p2Score);
+            $("#p2LivesDisp").text(p2Lives);
+            $("#p1LivesDisp").text(p1Lives);
+
         }
     }//closing scoring
+
+    function lives(k,wp) {
+        if (wp == 1) {
+            p1Lives=p1Lives-1;
+            if (p1Lives<=0) {
+                p1Score-=10; 
+                endGame(2);
+                gameOn=false;
+
+            }
+            $("#p1LivesDisp").text(p1Lives);
+            badStarArray[k]._visible=false;
+            badStarArray[k]._x=w+900;  
+        } //close if wp
+       // close lives
+        if (wp==2) {
+            p2Lives=p2Lives-1;
+            if (p2Lives<=0) { 
+                p2Score -=10;
+                endGame(1);
+                gameOn=false;
+            }
+            $("#p2LivesDisp").text(p2Lives);
+            badStarArray[k]._visible=false;
+            badStarArray[k]._x=w+900;
+        } //close if wp
+    
 }
+function endGame(wp) {
+        ctx.fillStyle= "rgba(250,0,0,.4)";
+        ctx.fillRect(50,50,w-100,h-100);
+        ctx.fillStyle="black";
+        ctx.font="30px Sans-Serif";
+        if (wp==1){
+            ctx.fillText("Game over, Player one Wins",w/4,h/2);
+        }
+        if (wp==2){
+            ctx.fillText("Game over, Player two Wins",w/4,h/2);
+        }       
+    }  // close endGame
+}
+//Level 1: 10 bad stars, 1 good star
+//Level 2: 15 bad stars, 3 Good
+//Level 3: 20 bad stars 4 good stars
+// Bonus Level: 25 bad stars

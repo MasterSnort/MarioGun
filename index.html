@@ -4,8 +4,12 @@
 <head>
     <title>StarCatcher - Software Development</title>
 <!--    our link to the javascript file that will control the game actions -->
-    <script type="text/javascript" src="scScripts.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script type="text/javascript" src="scScripts2.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
 
 <!--    out styles will be internal until we need to move them to an external file -->
     <style type="text/css">
@@ -35,8 +39,10 @@
 <body>
     <h2 class="centerText">Game ON!</h2>
       
-<p id="leftSide">Player 1: <span id="p1ScoreDisp">0</span></p>
-    <p id="rightSide">Player 2: <span id="p1ScoreDisp">0</span></p>
+ <p id="leftSide"> <!-- Player 1: <span id="p1ScoreDisp">0</span><br> -->
+        Lives: <span id="p1LivesDisp">3</span></p>
+    <p id="rightSide"> <!-- Player 2: <span id="p2ScoreDisp">0</span><br> -->
+        Lives: <span id="p2LivesDisp">3</span></p>
 
     <div id="game">
 
@@ -44,5 +50,39 @@
         <canvas id="myCanvas"></canvas>
 
     </div>
+<!-- Button to Open the Modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+  Rules
+</button>
+
+<!-- The Modal -->
+<div class="modal" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Rules:</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body"> Red Lasers make you lose 1 life</div>
+       <div class="modal-body">The gold Star gives you 1 extra life</div>
+       <div class="modal-body">The goal of the game is to outlast your opponent</div>
+       <div class="modal-body">Levels</div>
+       <div class="modal-body">Level 1: 15 bad stars, 1 good star</div>
+       <div class="modal-body">Level 2: 20 bad stars, 3 good star</div>
+       <div class="modal-body">Challenge: 25 bad stars, 3 good star</div>
+
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
 </body>
 </html>
